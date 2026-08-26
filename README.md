@@ -37,8 +37,8 @@ data "terraform_remote_state" "k8s" {
 
 ```mermaid
 flowchart LR
-    K8S[("infra-k8s remote state\nvpc_id / public_subnet_ids / vpc_cidr_block")]
-    RDS["RDS PostgreSQL\ndb.t3.micro - postgres 18"]
+    K8S[("infra-k8s remote state<br/>vpc_id / public_subnet_ids / vpc_cidr_block")]
+    RDS["RDS PostgreSQL<br/>db.t3.micro - postgres 18"]
     DBH["oficina_homolog"]
     DBP["oficina_prod"]
     SSMH["SSM /oficina/homolog/*"]
@@ -97,6 +97,19 @@ Isso existe porque, na conta de sandbox da AWS Academy, não há bastion host ne
 
 Em uma implantação de produção real, o correto seria manter o RDS acessível somente dentro da VPC, com acesso externo restrito a um bastion host ou VPN.
 
+## Trade-off: apply em duas fases e ausência de recuperação de dados
+
+O provider `cyrilgdn/postgresql` é configurado usando `aws_db_instance.main.address`, ou seja, um atributo que só existe depois que o RDS é criado. Isso significa que um `terraform apply` totalmente do zero (state vazio) pode falhar com um erro do tipo "the configuration for provider ... depends on values that cannot be determined until apply" ao tentar criar os bancos lógicos e os parâmetros SSM na mesma execução. Quando isso acontecer, aplique em duas etapas:
+
+```bash
+terraform apply -target=aws_db_instance.main
+terraform apply
+```
+
+O primeiro comando cria só a instância RDS; o segundo, com o endereço já conhecido, cria o restante (bancos lógicos e parâmetros SSM) normalmente.
+
+Além disso, a instância usa `skip_final_snapshot = true` e não define `backup_retention_period`, ou seja, não há snapshot final nem backups automáticos: destruir a instância apaga todos os dados sem possibilidade de recuperação. Isso é aceitável para este ambiente de sandbox acadêmico, mas não seria aceitável em produção real.
+
 ## Pré-requisitos para aplicar localmente
 
 1. Sessão ativa do AWS Academy Learner Lab com credenciais atualizadas (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`).
@@ -105,6 +118,8 @@ Em uma implantação de produção real, o correto seria manter o RDS acessível
 4. Bucket de state S3 (`tc-fiap-oficina-tfstate-076155200589`) acessível — se não existir, o pipeline de CD tem um passo de bootstrap que cria; localmente, é preciso criar manualmente ou reaproveitar um já existente.
 
 ## Como aplicar
+
+Copie `terraform.tfvars.example` para `terraform.tfvars` e preencha `db_password` com a senha real (ou defina `TF_VAR_db_password` como variável de ambiente, conforme abaixo) — nunca commitar o arquivo `terraform.tfvars` preenchido.
 
 ```bash
 export TF_VAR_db_password="<mesma senha do secret TF_VAR_db_password>"
