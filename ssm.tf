@@ -20,7 +20,7 @@ resource "aws_ssm_parameter" "database_url" {
   value = format(
     "postgresql://%s:%s@%s:5432/%s?schema=public",
     var.db_username,
-    var.db_password,
+    urlencode(var.db_password),
     aws_db_instance.main.address,
     postgresql_database.env[each.key].name,
   )
