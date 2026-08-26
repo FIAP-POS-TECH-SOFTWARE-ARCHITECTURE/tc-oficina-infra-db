@@ -1,0 +1,2 @@
+# Copie para terraform.tfvars para uso local. NUNCA commitar terraform.tfvars.
+db_password = "troque-esta-senha"
