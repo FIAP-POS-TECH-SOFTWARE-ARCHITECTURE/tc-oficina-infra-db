@@ -1,7 +1,5 @@
 .terraform/
 *.tfstate
 *.tfstate.*
-.terraform.lock.hcl
 terraform.tfvars
 crash.log
-.superpowers/
