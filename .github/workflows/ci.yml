@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: fmt, validate e plan
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+      TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - run: terraform fmt -check
+      # validate não depende de credenciais AWS (backend desligado):
+      - run: terraform init -backend=false
+      - run: terraform validate
+      - name: Plan (best effort - credenciais Academy podem estar expiradas)
+        run: |
+          rm -rf .terraform
+          (terraform init && terraform plan -input=false) \
+            || echo "::warning::plan falhou (credenciais expiradas?); fmt+validate seguem obrigatorios"
