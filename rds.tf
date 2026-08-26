@@ -1,6 +1,11 @@
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-db-subnets"
   subnet_ids = data.terraform_remote_state.k8s.outputs.public_subnet_ids
+
+  tags = {
+    Project   = var.project_name
+    ManagedBy = "terraform"
+  }
 }
 
 resource "aws_security_group" "rds" {
@@ -31,6 +36,15 @@ resource "aws_security_group" "rds" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Project   = var.project_name
+    ManagedBy = "terraform"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_db_instance" "main" {
@@ -39,6 +53,7 @@ resource "aws_db_instance" "main" {
   engine_version         = "18"
   instance_class         = "db.t3.micro"
   allocated_storage      = 20
+  storage_encrypted      = true
   db_name                = "postgres"
   username               = var.db_username
   password               = var.db_password
@@ -47,4 +62,9 @@ resource "aws_db_instance" "main" {
   publicly_accessible    = true
   skip_final_snapshot    = true
   apply_immediately      = true
+
+  tags = {
+    Project   = var.project_name
+    ManagedBy = "terraform"
+  }
 }
