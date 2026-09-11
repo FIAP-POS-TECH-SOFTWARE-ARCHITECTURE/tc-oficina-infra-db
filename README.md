@@ -11,6 +11,8 @@ Este repositório é responsável só pelo banco de dados gerenciado e pelos con
 
 Nenhum outro repositório lê o state Terraform deste repo — a integração acontece inteiramente via SSM Parameter Store.
 
+Documentação arquitetural completa (componentes, sequências, RFCs, ADRs, DER): [`docs/arquitetura/`](https://github.com/FIAP-POS-TECH-SOFTWARE-ARCHITECTURE/tc-oficina-app/tree/main/docs/arquitetura) no `tc-oficina-app`. A justificativa formal do PostgreSQL/RDS e o DER estão em [`banco-de-dados.md`](https://github.com/FIAP-POS-TECH-SOFTWARE-ARCHITECTURE/tc-oficina-app/blob/main/docs/arquitetura/banco-de-dados.md); a topologia de instância única com dois bancos lógicos, em [ADR-004](https://github.com/FIAP-POS-TECH-SOFTWARE-ARCHITECTURE/tc-oficina-app/blob/main/docs/arquitetura/adrs/adr-004-ambientes-por-namespace-e-banco-logico.md).
+
 ## Tecnologias
 
 - Terraform >= 1.9
