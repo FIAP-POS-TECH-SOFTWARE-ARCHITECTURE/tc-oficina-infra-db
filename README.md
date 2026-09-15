@@ -23,7 +23,7 @@ precisa estar aplicado primeiro**.
 - Terraform ≥ 1.10 (CI/CD fixam 1.15.9; `use_lockfile` no backend S3 exige ≥ 1.10)
 - Providers: `hashicorp/aws` (RDS, security group, SSM), `cyrilgdn/postgresql` (bancos
   lógicos dentro da instância), `hashicorp/random` (segredos JWT)
-- Backend remoto: S3 (`tc-fiap-oficina-tfstate-076155200589`, key `fase-3/infra-db.tfstate`)
+- Backend remoto: S3 (`tc-fiap-oficina-tfstate-512135631497`, key `fase-3/infra-db.tfstate`)
   com locking nativo (`use_lockfile`)
 - GitHub Actions — CI (`fmt`/`validate`/`plan`) e CD (`apply`)
 
@@ -58,7 +58,7 @@ Dependência do remote state do `tc-oficina-infra-k8s` (mesmo bucket S3, key
 data "terraform_remote_state" "k8s" {
   backend = "s3"
   config = {
-    bucket = "tc-fiap-oficina-tfstate-076155200589"
+    bucket = "tc-fiap-oficina-tfstate-512135631497"
     key    = "fase-3/infra-k8s.tfstate"
     region = "us-east-1"
   }
