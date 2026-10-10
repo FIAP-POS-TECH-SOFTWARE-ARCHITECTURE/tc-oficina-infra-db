@@ -1,3 +1,6 @@
+# Rede compartilhada pelas instâncias RDS (os-service e execution-service):
+# mesmas subnets públicas e mesma regra de acesso. O isolamento entre os
+# serviços é por instância e por credencial, não por rede.
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-db-subnets"
   subnet_ids = data.terraform_remote_state.k8s.outputs.public_subnet_ids
@@ -44,27 +47,5 @@ resource "aws_security_group" "rds" {
 
   lifecycle {
     create_before_destroy = true
-  }
-}
-
-resource "aws_db_instance" "main" {
-  identifier             = "${var.project_name}-db"
-  engine                 = "postgres"
-  engine_version         = "18"
-  instance_class         = "db.t3.micro"
-  allocated_storage      = 20
-  storage_encrypted      = true
-  db_name                = "postgres"
-  username               = var.db_username
-  password               = var.db_password
-  db_subnet_group_name   = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [aws_security_group.rds.id]
-  publicly_accessible    = true
-  skip_final_snapshot    = true
-  apply_immediately      = true
-
-  tags = {
-    Project   = var.project_name
-    ManagedBy = "terraform"
   }
 }
