@@ -13,3 +13,7 @@ output "execution_db_endpoint" {
 output "execution_databases" {
   value = [for db in postgresql_database.execution : db.name]
 }
+
+output "billing_dynamodb_tables" {
+  value = [for tabela in aws_dynamodb_table.billing : tabela.name]
+}
