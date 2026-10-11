@@ -23,3 +23,9 @@ variable "environments" {
   type    = list(string)
   default = ["homolog", "prod"]
 }
+
+variable "execution_db_username" {
+  description = "Usuário mestre da instância RDS do execution-service"
+  type        = string
+  default     = "execution"
+}

@@ -18,7 +18,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-      TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
+      TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
@@ -31,5 +31,11 @@ jobs:
             aws s3api create-bucket --bucket "$BUCKET" --region us-east-1
             aws s3api put-bucket-versioning --bucket "$BUCKET" --versioning-configuration Status=Enabled
           fi
-      - run: terraform init
-      - run: terraform apply -auto-approve -input=false
+      - run: terraform init -input=false
+      # Etapa 1: instâncias RDS antes dos providers postgresql, que dependem
+      # do endereço delas (necessário com state vazio, ex.: conta do lab
+      # recriada). Sem mudanças quando as instâncias já existem.
+      - name: Apply das instâncias RDS (etapa 1)
+        run: terraform apply -auto-approve -input=false -target=aws_db_instance.main -target=aws_db_instance.execution
+      - name: Apply completo (etapa 2)
+        run: terraform apply -auto-approve -input=false
