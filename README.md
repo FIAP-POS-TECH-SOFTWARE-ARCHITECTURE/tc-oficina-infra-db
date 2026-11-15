@@ -19,7 +19,7 @@ Este repositório lê o remote state do `tc-oficina-infra-k8s` (VPC/subnets), en
 
 - Terraform ≥ 1.10 (CI/CD fixam 1.15.9; `use_lockfile` no backend S3)
 - Providers: `hashicorp/aws` (RDS, DynamoDB, security group, SSM), `cyrilgdn/postgresql` (bancos lógicos, um provider por instância), `hashicorp/random` (senha do RDS do execution, JWT, chave interna)
-- Backend remoto: S3 `tc-fiap-oficina-tfstate-512135631497`, key `fase-3/infra-db.tfstate`
+- Backend remoto: S3 `tc-fiap-oficina-tfstate-931118247889`, key `fase-3/infra-db.tfstate`
 - GitHub Actions — CI (`fmt`/`validate`/`plan`) e CD (`apply`)
 
 ## Mapa de dados por serviço ✱
