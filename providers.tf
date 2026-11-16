@@ -21,13 +21,24 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Conecta no RDS público (trade-off Academy documentado no README)
-# para criar os bancos lógicos de homolog e prod.
+# Conecta no RDS público do os-service (trade-off Academy documentado no
+# README) para criar os bancos lógicos de homolog e prod.
 provider "postgresql" {
   host      = aws_db_instance.main.address
   port      = 5432
   username  = var.db_username
   password  = var.db_password
+  sslmode   = "require"
+  superuser = false
+}
+
+# Mesma ideia, na instância própria do execution-service.
+provider "postgresql" {
+  alias     = "execution"
+  host      = aws_db_instance.execution.address
+  port      = 5432
+  username  = var.execution_db_username
+  password  = random_password.execution_db.result
   sslmode   = "require"
   superuser = false
 }

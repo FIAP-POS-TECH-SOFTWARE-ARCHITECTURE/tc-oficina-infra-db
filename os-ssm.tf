@@ -1,17 +1,4 @@
-resource "random_password" "jwt" {
-  for_each = toset(var.environments)
-  length   = 64
-  special  = false
-}
-
-resource "aws_ssm_parameter" "jwt_secret" {
-  for_each = toset(var.environments)
-
-  name  = "/${var.project_name}/${each.key}/jwt-secret"
-  type  = "SecureString"
-  value = random_password.jwt[each.key].result
-}
-
+# Connection string do os-service (lida pelo CD do os-service).
 resource "aws_ssm_parameter" "database_url" {
   for_each = toset(var.environments)
 
